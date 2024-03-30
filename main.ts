@@ -110,7 +110,7 @@ function toExel() {
 
 
 (async () => {
-    const repos = await getAllRepos('pokt-network');
+    const repos = await getAllRepos(ORG_NAME);
     for (let inx = 0; inx < repos.length; inx++) {
         await appendDataToFile(repos[inx])
         console.log(`repoCount aded till now is: ${inx + 1}`)
