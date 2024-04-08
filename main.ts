@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as fs from 'fs';
 import * as XLSX from 'xlsx';
+import * as readline from 'readline';
 
 function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -36,19 +37,19 @@ async function getAllRepos(orgName: string) {
 }
 
 
-async function appendDataToFile(name: string): Promise<void> {
+async function appendDataToFile(orgName: string, repoName: string): Promise<void> {
     let page = 1
     while (true) {
         try {
             await sleep(1500);
-            const res1 = await axios.get(`https://api.github.com/repos/pokt-network/${name}/commits?page=${page}`,
+            const res = await axios.get(`https://api.github.com/repos/${orgName}/${repoName}/commits?page=${page}`,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        Authorization: `Bearer YOUR_ACCESS_TOKEN`,
                         'Content-Type': 'application/json',
                     }
                 });
-            const newData = res1.data;
+            const newData = res.data;
             if (newData.length === 0) {
                 console.log(`${name} repo added`)
                 break
@@ -108,11 +109,11 @@ function toExel() {
     console.log('Data added to Excel file successfully!');
 }
 
-
 (async () => {
-    const repos = await getAllRepos('pokt-network');
+    const orgName = 'YOUR_ORG_NAME'
+    const repos = await getAllRepos(orgName);
     for (let inx = 0; inx < repos.length; inx++) {
-        await appendDataToFile(repos[inx])
+        await appendDataToFile(orgName, repos[inx])
         console.log(`repoCount aded till now is: ${inx + 1}`)
     }
     toExel()
