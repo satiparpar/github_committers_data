@@ -13,19 +13,19 @@ async function getAllRepos(orgName: string) {
     while (true) {
         try {
             await sleep(1500);
-            const res1 = await axios.get(`https://api.github.com/orgs/${orgName}/repos?page=${page}`,
+            const res = await axios.get(`https://api.github.com/orgs/${orgName}/repos?page=${page}`,
                 {
                     headers: {
                         Authorization: 'Bearer YOUR_GITHUB_TOKEN',
                         'Content-Type': 'application/json',
                     }
                 })
-            if (res1.data.length === 0) {
+            if (res.data.length === 0) {
                 console.log('All repos added to the list')
                 break
             }
-            for (let inx = 0; inx < res1.data.length; inx++) {
-                repos.push(res1.data[inx].name)
+            for (let inx = 0; inx < res.data.length; inx++) {
+                repos.push(res.data[inx].name)
             }
         } catch (error) {
             console.error('Error:', error);
@@ -51,7 +51,7 @@ async function appendDataToFile(orgName: string, repoName: string): Promise<void
                 });
             const newData = res.data;
             if (newData.length === 0) {
-                console.log(`${name} repo added`)
+                console.log(`${repoName} repo added`)
                 break
             }
             for (let inx = 0; inx < newData.length; inx++) {
@@ -66,7 +66,7 @@ async function appendDataToFile(orgName: string, repoName: string): Promise<void
                         email: pointner.author.email,
                         date: pointner.committer.date,
                         message: pointner.message.split(/\n(.*)/, 2)[0],
-                        repo: name,
+                        repo: repoName,
                     }
                     existingData.push(whatIWant);
 
@@ -77,7 +77,7 @@ async function appendDataToFile(orgName: string, repoName: string): Promise<void
             page += 1
         } catch (error) {
             console.error('Error:', error.response.data.message);
-            console.log(`there was some problems with ${name} repo !!!`)
+            console.log(`there was some problems with ${repoName} repo !!!`)
             break
         }
     }
